@@ -1,0 +1,46 @@
+{
+  "_comment": "Model Registry. Use promote_model.py to manage versions. Set 'enabled': false to disable ML filter without losing the production model path.",
+  "yu_broken_bottom": {
+    "enabled": true,
+    "threshold": 0.3,
+    "production": "machine_learning/models/yu_broken_bottom_20260317.joblib",
+    "versions": [
+      {
+        "version": "v1",
+        "path": "machine_learning/models/yu_broken_bottom_v1.joblib",
+        "trained_date": "2026-02-28",
+        "dataset": "backtest_engine/machine_learning/yu_ml_dataset.jsonl",
+        "notes": "Initial model. Random Forest, n_estimators=100, max_depth=5.",
+        "status": "archived",
+        "demoted_date": "2026-03-17"
+      },
+      {
+        "version": "v2",
+        "path": "machine_learning/models/yu_broken_bottom_20260317.joblib",
+        "trained_date": "2026-03-17",
+        "notes": "RF n_estimators=100, max_depth=5. Test acc=81.25%, baseline win rate=15.00%",
+        "status": "candidate"
+      },
+      {
+        "version": "v3",
+        "path": "machine_learning/models/yu_broken_bottom_20260317.joblib",
+        "trained_date": "2026-03-17",
+        "notes": "RF n_estimators=100, max_depth=5. Test acc=89.47%, baseline win rate=34.07%",
+        "status": "production",
+        "promoted_date": "2026-03-17"
+      },
+      {
+        "version": "v4",
+        "path": "machine_learning/models/yu_broken_bottom_20260317.joblib",
+        "trained_date": "2026-03-17",
+        "notes": "RF n_estimators=100, max_depth=5. Test acc=68.18%, baseline win rate=26.67%",
+        "status": "candidate"
+      }
+    ]
+  },
+  "pine_l4": {
+    "enabled": false,
+    "production": null,
+    "versions": []
+  }
+}

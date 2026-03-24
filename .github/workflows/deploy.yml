@@ -1,0 +1,201 @@
+name: Build and Push Docker Images to ECR
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      service_to_build:
+        description: 'Select service(s) to build'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - market_data_streamer
+          - trading_engine
+          - auth_manager
+          - trading_manager
+          - api_server
+          - frontend
+      deploy_to_ec2:
+        description: 'Trigger deployment to EC2 after build?'
+        required: true
+        default: 'false'
+        type: boolean
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      primary_tag: ${{ steps.tag-logic.outputs.PRIMARY_TAG }}
+      secondary_tag: ${{ steps.tag-logic.outputs.SECONDARY_TAG }}
+      vite_api_base_url: ${{ steps.ssm.outputs.VITE_API_BASE_URL }}
+      instance_id: ${{ steps.ssm.outputs.INSTANCE_ID }}
+      aws_region: ${{ steps.ssm.outputs.AWS_REGION }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHubActionsPreparation
+          aws-region: ap-east-2
+
+      - name: Fetch Infrastructure Config from SSM
+        id: ssm
+        run: |
+          REGION=$(aws ssm get-parameter --name "/mc_trading/prod/AWS_REGION" --with-decryption --query "Parameter.Value" --output text)
+          INSTANCE_ID=$(aws ssm get-parameter --name "/mc_trading/prod/AWS_EC2_INSTANCE_ID" --with-decryption --query "Parameter.Value" --output text)
+          VITE_API_URL=$(aws ssm get-parameter --name "/mc_trading/prod/VITE_API_BASE_URL" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "https://api.mc-trading.link")
+          echo "AWS_REGION=$REGION" >> $GITHUB_OUTPUT
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_OUTPUT
+          echo "VITE_API_BASE_URL=$VITE_API_URL" >> $GITHUB_OUTPUT
+
+      - name: Prepare Image Tags
+        id: tag-logic
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_VERSION="${GITHUB_REF#refs/tags/}"
+            echo "PRIMARY_TAG=$TAG_VERSION" >> $GITHUB_OUTPUT
+            echo "SECONDARY_TAG=latest" >> $GITHUB_OUTPUT
+          else
+            echo "PRIMARY_TAG=dev-${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
+            echo "SECONDARY_TAG=dev-latest" >> $GITHUB_OUTPUT
+          fi
+
+  build-market-data:
+    needs: prepare
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.service_to_build == 'all' || github.event.inputs.service_to_build == 'market_data_streamer'
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      service_name: market_data_streamer
+      image_name: mc-cpp-ingestor
+      dockerfile: market_data_streamer/Dockerfile
+      primary_tag: ${{ needs.prepare.outputs.primary_tag }}
+      secondary_tag: ${{ needs.prepare.outputs.secondary_tag }}
+    secrets: inherit
+
+  build-trading-engine:
+    needs: prepare
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.service_to_build == 'all' || github.event.inputs.service_to_build == 'trading_engine'
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      service_name: trading_engine
+      image_name: mc-trading-engine
+      dockerfile: trading_engine/Dockerfile
+      primary_tag: ${{ needs.prepare.outputs.primary_tag }}
+      secondary_tag: ${{ needs.prepare.outputs.secondary_tag }}
+    secrets: inherit
+
+  build-auth-manager:
+    needs: prepare
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.service_to_build == 'all' || github.event.inputs.service_to_build == 'auth_manager'
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      service_name: auth_manager
+      image_name: mc-auth-manager
+      dockerfile: auth_manager/Dockerfile
+      primary_tag: ${{ needs.prepare.outputs.primary_tag }}
+      secondary_tag: ${{ needs.prepare.outputs.secondary_tag }}
+    secrets: inherit
+
+  build-trading-manager:
+    needs: prepare
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.service_to_build == 'all' || github.event.inputs.service_to_build == 'trading_manager'
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      service_name: trading_manager
+      image_name: mc-trade-manager
+      dockerfile: trade_manager/Dockerfile
+      primary_tag: ${{ needs.prepare.outputs.primary_tag }}
+      secondary_tag: ${{ needs.prepare.outputs.secondary_tag }}
+    secrets: inherit
+
+  test-api-server:
+    needs: prepare
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.service_to_build == 'all' || github.event.inputs.service_to_build == 'api_server'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test api_server
+        run: dotnet test api_server/tests/ApiServer.Tests.csproj
+
+  build-api-server:
+    needs: [prepare, test-api-server]
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.service_to_build == 'all' || github.event.inputs.service_to_build == 'api_server'
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      service_name: api_server
+      image_name: mc-api-server
+      dockerfile: api_server/Dockerfile
+      primary_tag: ${{ needs.prepare.outputs.primary_tag }}
+      secondary_tag: ${{ needs.prepare.outputs.secondary_tag }}
+    secrets: inherit
+
+  build-frontend:
+    needs: prepare
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.service_to_build == 'all' || github.event.inputs.service_to_build == 'frontend'
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      service_name: frontend
+      image_name: mc-frontend
+      context: ./frontend
+      dockerfile: frontend/Dockerfile
+      primary_tag: ${{ needs.prepare.outputs.primary_tag }}
+      secondary_tag: ${{ needs.prepare.outputs.secondary_tag }}
+      build_args: |
+        VITE_API_BASE_URL=${{ needs.prepare.outputs.vite_api_base_url }}
+    secrets: inherit
+
+  deploy:
+    needs: 
+      - prepare
+      - build-market-data
+      - build-trading-engine
+      - build-auth-manager
+      - build-trading-manager
+      - build-api-server
+      - build-frontend
+    if: >
+      always() &&
+      needs.prepare.result == 'success' &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled') &&
+      (startsWith(github.ref, 'refs/tags/') || github.event.inputs.deploy_to_ec2 == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHubActionsDeployment
+          aws-region: ap-east-2
+
+      - name: Trigger EC2 Deployment via SSM
+        env:
+          REGION: ${{ needs.prepare.outputs.aws_region }}
+          INSTANCE_ID: ${{ needs.prepare.outputs.instance_id }}
+          DEPLOY_TAG: ${{ needs.prepare.outputs.secondary_tag }}
+          SERVICE_NAME: ${{ github.event.inputs.service_to_build || 'all' }}
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh $DEPLOY_TAG $SERVICE_NAME

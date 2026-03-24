@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "high-perf-ws-client",
+  "version": "1.0.0",
+  "dependencies": [
+    "boost-beast",
+    "boost-asio",
+    "boost-system",
+    "boost-thread",
+    "openssl",
+    "redis-plus-plus",
+    "nlohmann-json",
+    "cppzmq"
+  ]
+}

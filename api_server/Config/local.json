@@ -1,0 +1,11 @@
+{
+  "ENVIRONMENT": "local",
+  "POSTGRES_HOST": "",
+  "POSTGRES_PORT": "",
+  "POSTGRES_USER": "",
+  "POSTGRES_PASSWORD": "",
+  "POSTGRES_DB": "",
+  "REDIS_HOST": "",
+  "REDIS_PORT": "",
+  "REDIS_PASSWORD": ""
+}

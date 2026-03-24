@@ -1,0 +1,20 @@
+[Unit]
+Description=MC Trading System - Docker Health Monitor
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+# Deployment directory setting
+WorkingDirectory=/home/ec2-user/mc_trading_system
+# Execution command for PowerShell Core
+ExecStart=/usr/bin/pwsh /home/ec2-user/mc_trading_system/monitor_docker.ps1
+Restart=always
+# Restart delay (5 seconds)
+RestartSec=5
+# Output logs to system journal
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

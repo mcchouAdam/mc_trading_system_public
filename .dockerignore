@@ -1,0 +1,17 @@
+.git
+**/venv
+**/__pycache__
+**/.pytest_cache
+**/node_modules
+**/build/
+**/vcpkg_installed/
+**/.vs
+**/.vscode
+**/*.sql
+**/*.log
+**/*.csv
+machine_learning/models/
+data/
+!**/machine_learning/model_registry.json
+!api_server/Migrations/Scripts/**/*.sql
+!data/seed/

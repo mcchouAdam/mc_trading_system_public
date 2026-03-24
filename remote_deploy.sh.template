@@ -1,0 +1,89 @@
+#!/bin/bash
+# remote_deploy.sh
+# THIS IS EXECUTED ON THE EC2 INSTANCE.
+set -e
+
+# These will be replaced by deploy.sh
+IMAGE_TAG="__IMAGE_TAG__"
+SERVICE_NAME="__SERVICE_NAME__"
+REGION="__REGION__"
+COMPOSE_B64="__COMPOSE_B64__"
+REGISTRY_B64="__REGISTRY_B64__"
+
+WORK_DIR="/home/ec2-user/mc_trading_system"
+mkdir -p "$WORK_DIR"
+cd "$WORK_DIR"
+
+echo "==== Starting Remote Deployment ===="
+echo "Target Service: $SERVICE_NAME"
+echo "Image Tag:      $IMAGE_TAG"
+
+# Restore files
+echo "$COMPOSE_B64" | base64 -d > docker-compose.production.yml
+mkdir -p machine_learning
+if [ -d "machine_learning/model_registry.json" ]; then rm -rf "machine_learning/model_registry.json"; fi
+echo "$REGISTRY_B64" | base64 -d > machine_learning/model_registry.json
+
+# Fetch AWS Account ID for ECR
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+# Fetch secrets from SSM
+echo "Fetching secrets from SSM..."
+aws ssm get-parameters-by-path \
+    --path /mc_trading/prod/ \
+    --with-decryption \
+    --query "Parameters[*].[Name,Value]" \
+    --output text --region $REGION | sed 's|^/mc_trading/prod/||; s/\t/=/g' > .env
+
+# Inject AWS-specific variables needed for Docker image tag resolution
+echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> .env
+echo "AWS_REGION=$REGION" >> .env
+
+# Handle Tag and Service Logic
+if [ "$SERVICE_NAME" = "all" ]; then
+    echo "IMAGE_TAG=$IMAGE_TAG" >> .env
+else
+    # Mapping logic
+    ENV_VAR_NAME=$(echo $SERVICE_NAME | tr '[:lower:]' '[:upper:]')_TAG
+    ACTUAL_SERVICE=$SERVICE_NAME
+    if [ "$SERVICE_NAME" = "trading_manager" ]; then ACTUAL_SERVICE="trade_manager"; fi
+    if [ "$SERVICE_NAME" = "db_migrate" ]; then ENV_VAR_NAME="TRADING_MANAGER_TAG"; ACTUAL_SERVICE="trade_manager"; fi
+    ACTUAL_SERVICE_NAME="mc-$(echo $ACTUAL_SERVICE | tr '_' '-')"
+    
+    echo "Targeting specific service: $ACTUAL_SERVICE_NAME (Env Key: $ENV_VAR_NAME)"
+    echo "$ENV_VAR_NAME=$IMAGE_TAG" >> .env
+    echo "IMAGE_TAG=latest" >> .env
+fi
+
+# Docker Login
+aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+
+# Cleanup old images
+docker image prune -f
+
+# Restore Monitor Script and Systemd Service
+echo "Configuring Health Monitor Persistence..."
+echo "__MONITOR_B64__" | base64 -d > monitor_docker.ps1
+echo "__SERVICE_B64__" | base64 -d > mc-monitor.service
+sudo mv mc-monitor.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable mc-monitor
+sudo systemctl restart mc-monitor
+
+# Deployment
+if [ "$SERVICE_NAME" = "monitor" ]; then
+    echo "Monitor service updated and restarted. Skipping Docker operations."
+elif [ "$SERVICE_NAME" = "all" ]; then
+    docker-compose -f docker-compose.production.yml --env-file .env pull
+    docker-compose -f docker-compose.production.yml --env-file .env up -d --force-recreate --remove-orphans
+else
+    if [ "$SERVICE_NAME" = "db_migrate" ]; then
+        docker-compose -f docker-compose.production.yml --env-file .env pull $ACTUAL_SERVICE_NAME || true
+        docker-compose -f docker-compose.production.yml --env-file .env run --rm $ACTUAL_SERVICE_NAME
+    else
+        docker-compose -f docker-compose.production.yml --env-file .env pull $ACTUAL_SERVICE_NAME || true
+        docker-compose -f docker-compose.production.yml --env-file .env up -d --no-deps $ACTUAL_SERVICE_NAME
+    fi
+fi
+
+echo "==== Remote Deployment Complete ===="

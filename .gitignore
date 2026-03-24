@@ -1,0 +1,105 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# debug information files
+*.dwo
+
+# C++ Build & vcpkg
+build/
+out/
+vcpkg/
+vcpkg_installed/
+.vs/
+.cache/
+
+# Python & Environment
+venv/
+__pycache__/
+.env
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+.terraform.tfstate.lock.info
+*.tfvars
+
+# Keys and Secrets
+infra/*_key
+infra/*_key.pub
+*.pem
+*.ppk
+
+# Debug & Temporary JSON / Logs
+remote_logs*.txt
+ssm*.txt
+ssm*.json
+remote_deploy.json
+runs.json
+
+# Web App / Node / Javascript
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Backtest Engine & Output
+backtest_engine/reports/
+backtest_engine/backtest_engine/reports/
+backtest_engine/data/historical/**/*.parquet
+.parquet
+
+# Jupyter & Misc
+.ipynb_checkpoints/
+.agent/
+machine_learning/to_be_labelled_data/
+
+# .NET / C#
+[Bb]in/
+[Oo]bj/
+TestResults/
+*.user
+*.userosscache
+*.sln.doccache
+**/appsettings.Development.json
+**/appsettings.json
+!api_server/appsettings.json
+!tools/ParquetDownloader/appsettings.json
+
+k8s/env-config.yaml

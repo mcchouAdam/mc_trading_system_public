@@ -1,0 +1,42 @@
+name: Deploy Monitor Shell Script
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'monitor_docker.ps1'
+      - 'mc-monitor.service'
+  workflow_dispatch:
+
+jobs:
+  deploy-monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHubActionsMonitorDeployment
+          aws-region: ap-east-2
+
+      - name: Fetch Infrastructure Config from SSM
+        id: ssm
+        run: |
+          REGION=$(aws ssm get-parameter --name "/mc_trading/prod/AWS_REGION" --with-decryption --query "Parameter.Value" --output text)
+          INSTANCE_ID=$(aws ssm get-parameter --name "/mc_trading/prod/AWS_EC2_INSTANCE_ID" --with-decryption --query "Parameter.Value" --output text)
+          echo "REGION=$REGION" >> $GITHUB_ENV
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+
+      - name: Deploy Monitor Script via SSM
+        run: |
+          chmod +x ./deploy.sh
+          # Use 'monitor' as service name to trigger the lightweight path
+          ./deploy.sh latest monitor

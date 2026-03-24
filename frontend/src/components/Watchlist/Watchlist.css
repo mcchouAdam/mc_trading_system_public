@@ -1,0 +1,266 @@
+.watchlist-pane {
+    background-color: #131722;
+    border-right: 1px solid #2B2B43;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.watch-section-header {
+    background-color: #1a1e2a;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #787B86;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2B2B43;
+}
+
+.epic-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #d1d4dc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.epic-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.epic-item.active {
+    background: rgba(41, 98, 255, 0.1);
+    border-left: 3px solid #2962FF;
+    color: #fff;
+    font-weight: 600;
+}
+
+.live-badge {
+    font-size: 9px;
+    background: #00E676;
+    color: #131722;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 800;
+}
+
+.strategy-card {
+    background: #1E222D;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #2B2B43;
+    transition: all 0.2s;
+}
+
+.strategy-card.disabled {
+    opacity: 0.5;
+    filter: grayscale(0.2);
+}
+
+.strategy-card:hover {
+    border-color: #363c4e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.strat-name {
+    font-size: 10px;
+    color: #787B86;
+    font-weight: 600;
+}
+
+.strat-epic {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 500;
+    margin: 2px 0;
+}
+
+.ml-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 800;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.v-splitter {
+    height: 1px;
+    background: #2B2B43;
+    cursor: row-resize;
+    position: relative;
+    margin: 4px 0;
+    transition: background 0.2s;
+    z-index: 10;
+}
+
+.v-splitter::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+}
+
+.v-splitter:hover,
+.v-splitter.active {
+    background: #2962FF;
+    height: 2px;
+}
+
+/* Modal Form Styles */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-label {
+    display: block;
+    font-size: 11px;
+    color: #787B86;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    background: #131722;
+    color: #fff;
+    border: 1px solid #363c4e;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    outline: none;
+}
+
+.form-input:focus,
+.form-select:focus {
+    border-color: #2962FF;
+}
+
+.param-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.strategy-list-container {
+    padding: 12px;
+}
+
+/* ── StrategyItem ─────────────────────────────────── */
+.strategy-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.strategy-item-left {
+    flex: 1;
+}
+
+.strategy-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.strat-epic-link {
+    cursor: pointer;
+}
+
+.strat-resolution {
+    color: #787B86;
+    font-size: 10px;
+}
+
+.strat-tag-row {
+    margin-top: 6px;
+    display: flex;
+    gap: 6px;
+}
+
+/* ML tag states */
+.ml-tag--on {
+    background: #2962FF;
+    color: #fff;
+}
+
+.ml-tag--off {
+    background: #2B2B43;
+    color: #787B86;
+}
+
+.ml-tag--disabled {
+    background: #2B2B43;
+    color: #444;
+    opacity: 0.5;
+}
+
+.ml-tag--edit {
+    background: #2B2B43;
+    color: #787B86;
+}
+
+/* Delete button */
+.btn-delete {
+    background: transparent;
+    border: none;
+    color: #ef5350;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    line-height: 1;
+}
+
+/* ── StrategyForm ─────────────────────────────────── */
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.params-section {
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+.param-key {
+    font-size: 12px;
+}
+
+.param-input {
+    width: 70px;
+    padding: 2px 8px;
+}
+
+.btn-form-submit {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 8px;
+    background: #FFC107;
+    color: #000;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+}

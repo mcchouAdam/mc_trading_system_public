@@ -1,0 +1,320 @@
+.trades-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    background-color: #131722;
+}
+
+.open-pane,
+.closed-pane {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    height: 100%;
+}
+
+.table-header {
+    height: 48px;
+    background-color: #1a1e2a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #2B2B43;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    min-width: 100%;
+    width: fit-content;
+}
+
+.table-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-count {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: visible;
+    /* Let the parent closed-pane handle horizontal scroll */
+    position: relative;
+    width: 100%;
+}
+
+.trades-table {
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    color: #d1d4dc;
+    table-layout: auto;
+}
+
+.trades-table th,
+.trades-table td {
+    min-width: 80px;
+    /* Prevent columns from disappearing */
+    padding: 10px 12px;
+    white-space: nowrap;
+}
+
+.trades-table th:first-child,
+.trades-table td:first-child {
+    min-width: 120px;
+    /* Strategy column usually needs more space */
+}
+
+.trades-table thead th {
+    position: sticky;
+    top: 0;
+    background: #1a1e2a;
+    padding: 8px 12px;
+    text-align: left;
+    color: #787B86;
+    font-weight: 600;
+    font-size: 11px;
+    border-bottom: 1px solid #2B2B43;
+    z-index: 2;
+}
+
+.trades-table tbody tr {
+    border-bottom: 1px solid rgba(43, 43, 67, 0.5);
+    transition: background 0.1s;
+    cursor: pointer;
+}
+
+.trades-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.trades-table td {
+    padding: 10px 12px;
+    white-space: nowrap;
+}
+
+.v-splitter-h {
+    width: 4px;
+    background: #2B2B43;
+    cursor: col-resize;
+    transition: background 0.2s;
+}
+
+.v-splitter-h:hover,
+.v-splitter-h.active {
+    background: #2962FF;
+}
+
+.search-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.search-input {
+    background: #131722;
+    color: #d1d4dc;
+    border: 1px solid #363c4e;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    outline: none;
+}
+
+.search-btn {
+    background: #2962FF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px;
+    background: #1a1e2a;
+    border-top: 1px solid #2B2B43;
+    flex-shrink: 0;
+    min-width: 100%;
+    width: fit-content;
+}
+
+.pnl-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.win {
+    color: #00E676;
+}
+
+.loss {
+    color: #ef5350;
+}
+
+.toast-mismatch {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef5350;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+.table-title-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.table-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(19, 23, 34, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.edit-overlay {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    min-width: 220px;
+    background: #1E222D;
+    border: 1px solid #2962FF;
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit-overlay-fields {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-overlay-field {
+    flex: 1;
+}
+
+.edit-overlay-label {
+    font-size: 10px;
+    color: #787B86;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.edit-overlay-input {
+    width: 100%;
+}
+
+.edit-pnl-hint {
+    font-size: 9px;
+    margin-top: 4px;
+}
+
+.edit-overlay-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-overlay-save {
+    flex: 1;
+}
+
+.edit-overlay-cancel {
+    background: #434651;
+}
+
+.td-center {
+    text-align: center;
+}
+
+.td-strategy {
+    color: #2962FF;
+    font-weight: bold;
+}
+
+.td-timestamp {
+    font-size: 11px;
+    color: #787B86;
+}
+
+.td-action-btns {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.td-level-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.td-syncing {
+    color: #787B86;
+    font-size: 10px;
+}
+
+.td-closing {
+    font-size: 10px;
+    color: #787B86;
+}
+
+.pagination-page-info {
+    font-size: 11px;
+    color: #787B86;
+}
+
+.btn-pagination {
+    background: #2B2B43;
+}
+
+/* Selected row highlight */
+.row--selected {
+    background: rgba(41, 98, 255, 0.15) !important;
+}
+
+/* Icon buttons hidden while editing */
+.btn-icon--hidden {
+    opacity: 0;
+    pointer-events: none;
+}

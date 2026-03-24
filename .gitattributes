@@ -1,0 +1,6 @@
+documents/*.html linguist-generated=true
+backtest_engine/reports/*.html linguist-generated=true
+
+*.html linguist-detectable=false
+
+frontend/dist/** linguist-generated=true

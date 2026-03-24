@@ -1,0 +1,285 @@
+.risk-pane {
+    background-color: #1a1e2a;
+    border-radius: 12px;
+    padding: 16px;
+    color: #e0e0e0;
+    font-family: 'Inter', system-ui, sans-serif;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    border: 1px solid #2B2B43;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.risk-content {
+    padding-top: 10px;
+}
+
+.risk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #2B2B43;
+}
+
+.risk-header h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #f0f0f0;
+    letter-spacing: 0.5px;
+}
+
+.risk-status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-left: 4px solid #363c4e;
+    transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.mc-title {
+    font-size: 11px;
+    color: #787B86;
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.mc-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.mc-subtext {
+    font-size: 10px;
+    color: #787B86;
+    margin-top: 4px;
+}
+
+.risk-bar-container {
+    margin-bottom: 18px;
+    padding: 0 4px;
+}
+
+.risk-bar-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.risk-bar-label {
+    font-size: 12px;
+    color: #b2b5be;
+    font-weight: 500;
+}
+
+.risk-bar-value {
+    font-size: 12px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.progress-track {
+    background: #131722;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    width: var(--fill-width, 0%);
+    background-color: var(--fill-color, #2962FF);
+    box-shadow: var(--fill-shadow, none);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+}
+
+.action-btn {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-resume {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-resume:disabled {
+    background: #2B2B43;
+    color: #5d606b;
+    cursor: not-allowed;
+}
+
+.btn-edit {
+    background: #2B2B43;
+    color: #d1d4dc;
+}
+
+.btn-save {
+    background: #2962FF;
+    color: white;
+}
+
+.btn-cancel {
+    background: #434651;
+    color: #d1d4dc;
+}
+
+.risk-input {
+    background: #131722;
+    color: #d1d4dc;
+    border: 1px solid #363c4e;
+    border-radius: 6px;
+    width: 60px;
+    font-size: 11px;
+    padding: 4px 8px;
+    outline: none;
+}
+
+.risk-input:focus {
+    border-color: #2962FF;
+}
+
+.win {
+    color: #00E676;
+}
+
+.loss {
+    color: #F44336;
+}
+
+.warning {
+    color: #FFC107;
+}
+
+.risk-bar-disabled {
+    text-decoration: line-through;
+    margin-right: 4px;
+}
+
+/* Metric card status border modifiers */
+.metric-card--win {
+    border-left-color: #00E676;
+}
+
+.metric-card--loss {
+    border-left-color: #F44336;
+}
+
+.metric-card--warning {
+    border-left-color: #FFC107;
+}
+
+/* mc-header layout */
+.mc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Status indicator dot + label */
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.status-badge--win {
+    color: #00E676;
+}
+
+.status-badge--loss {
+    color: #F44336;
+}
+
+.status-badge--warning {
+    color: #FFC107;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Edit bar layout helpers */
+.risk-bar-input-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.risk-bar-pct-unit {
+    font-size: 11px;
+}
+
+.risk-bar-label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Bottom action button row */
+.risk-action-row {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.risk-action-row .action-btn {
+    flex: 1;
+    height: 32px;
+}
+
+/* mc-subtext spacing */
+.mc-subtext-item+.mc-subtext-item {
+    margin-top: 2px;
+}
+
+/* Disabled risk bar */
+.risk-bar-container--disabled {
+    opacity: 0.3;
+}
+
+/* % unit color states */
+.risk-bar-pct-unit--enabled {
+    color: #00E676;
+}
+
+.risk-bar-pct-unit--disabled {
+    color: #434651;
+}
+
+/* PnL trend arrow inside mc-val */
+.mc-val-pnl {
+    font-size: 13px;
+}

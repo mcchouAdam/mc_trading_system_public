@@ -1,0 +1,10 @@
+{
+  "name": "mc-trading-engine-cpp",
+  "version": "1.0.0",
+  "dependencies": [
+    "cppzmq",
+    "nlohmann-json",
+    "redis-plus-plus",
+    "pybind11"
+  ]
+}

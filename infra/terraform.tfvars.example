@@ -1,0 +1,46 @@
+# =====================================================================
+# Cloudflare Credentials
+# =====================================================================
+CLOUDFLARE_API_TOKEN   = "your-api-token-here"
+CLOUDFLARE_ACCOUNT_ID  = "your-account-id-here"
+CLOUDFLARE_ZONE_ID     = "your-zone-id-here"
+CLOUDFLARE_ZONE_NAME   = "your-zone-name-here"
+
+# Ingress rules for Cloudflare Tunnel
+CLOUDFLARE_INGRESS_RULES = [
+  {
+    hostname = "your-ui-hostname"
+    service  = "your-ui-url"
+  },
+  {
+    hostname = "your-api-hostname"
+    service  = "your-api-url"
+  }
+]
+
+# =====================================================================
+# Trading Credentials (Capital.com)
+# =====================================================================
+CAPITAL_API_KEY  = "your-capital-api-key"
+CAPITAL_PASSWORD = "your-capital-password"
+CAPITAL_LOGIN_ID = "your-capital-login-id"
+CAPITAL_REST_URL = "https://demo-api-capital.backend-capital.com"
+
+# =====================================================================
+# Application Config & Secrets
+# =====================================================================
+VITE_API_BASE_URL = "your-api-endpoint"
+
+# Database & Cache
+POSTGRES_HOST     = "your-postgres-host"
+POSTGRES_USER     = "your-postgres-user"
+POSTGRES_PASSWORD = "your-postgres-password"
+POSTGRES_PORT     = "your-postgres-port"
+REDIS_HOST        = "your-redis-host"
+REDIS_PORT        = "your-redis-port"
+REDIS_PASSWORD    = "your-redis-password"
+
+# Monitoring
+ALERT_EMAIL = "your-alert-email@example.com"
+SMTP_USER   = "your-smtp-user"
+SMTP_PASS   = "your-smtp-password"

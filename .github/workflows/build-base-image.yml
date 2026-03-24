@@ -1,0 +1,48 @@
+name: Build and Push Base C++ Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'deployment/cpp-builder-base/**'
+
+env:
+  REPOSITORY: mc-cpp-base
+  REGION: ap-east-2
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build-base:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: BuildBaseImage
+          aws-region: ${{ env.REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and Push
+        uses: docker/build-push-action@v7
+        with:
+          context: ./deployment/cpp-builder-base
+          file: ./deployment/cpp-builder-base/Dockerfile
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

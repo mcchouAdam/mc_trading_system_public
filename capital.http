@@ -1,0 +1,150 @@
+### env
+@url = https://demo-api-capital.backend-capital.com/api/v1
+@X-CAP-API-KEY = {{$dotenv CAPITAL_API_KEY}}
+@identifier = {{$dotenv CAPITAL_LOGIN_ID}}
+@password = {{$dotenv CAPITAL_PASSWORD}}
+###
+
+# @name login
+POST {{url}}/session
+Content-Type: application/json
+X-CAP-API-KEY: {{X-CAP-API-KEY}}
+
+{
+    "identifier": "{{identifier}}",
+    "password": "{{password}}"
+}
+
+> {%
+    client.global.set("CST", response.headers.valueOf("cst"));
+    client.global.set("XST", response.headers.valueOf("x-security-token"));
+%}
+
+@CST = {{login.response.headers.cst}}
+@XST = {{login.response.headers.x-security-token}}
+
+###
+# @name get price
+# @no-log
+
+// GET {{url}}/prices/BTCUSD?resolution=HOUR_4&from=2026-03-07T00:00:00&to=2026-03-08T00:00:00
+GET {{url}}/prices/BTCUSD?resolution=MINUTE_15
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+###
+# @name get markets
+GET {{url}}/markets
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name get specific market
+GET {{url}}/markets/BTCUSD
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name create position
+POST {{url}}/positions
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+{
+  "epic": "BTCUSD",
+  "direction": "BUY",
+  "size": 0.01
+}
+
+###
+# @name update position
+PUT {{url}}/positions/000940dd-0055-311e-0000-000083316504
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+{
+  "profitLevel": 70000.80,
+  "stopLevel": 71551.80
+}
+
+###
+#{
+#  "epic": "BTCUSD",
+#  "direction": "BUY",
+#  "size": 0.01,
+#  "guaranteedStop": true,
+#  "stopLevel": 20,
+#  "profitLevel": 27
+#}
+
+###
+# @name get positions
+GET {{url}}/positions
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name get position
+GET {{url}}/positions/000940dd-0055-311e-0000-000083316504
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name get dealId
+GET {{url}}/confirms/o_bf716f49-961f-4c75-9d16-9e1b955254ce
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+
+###
+# @name get watchlists
+GET {{url}}/watchlists
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name get specific watchlist
+GET {{url}}/watchlists/61258237932960
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name add epic to specific watchlist
+PUT {{url}}/watchlists/61258237932960
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+{
+  "epic": "EURUSD"
+}
+
+###
+# @name get accounts
+GET {{url}}/accounts
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name get history transactions
+GET {{url}}/history/transactions?from=2026-03-01T00:00:00&to=2026-03-09T05:55:00&detailed=true
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
+
+###
+# @name get history transactions
+GET {{url}}/history/activity
+Content-Type: application/json
+CST: {{CST}}
+X-SECURITY-TOKEN: {{XST}}
